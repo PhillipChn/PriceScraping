@@ -83,9 +83,7 @@ def main():
 
         # Gets the product name
         container = parser.find("div", {"class":"items-view is-grid"})
-        print(container.div.a.img['title'])
-
-        product_name = container.strip()
+        product_name = container.div.a.img['title'].strip()
 
         # Gets the product price
         container = parser.find("div",{"class":"item-action"})
