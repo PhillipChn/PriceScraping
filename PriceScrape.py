@@ -24,3 +24,10 @@ container = parser.find("div", {"class":"item-info"})
 container = container.text[10:]
 product_name = container.strip()
 
+container = parser.find("div",{"class":"item-action"})
+price_box = container.find("li",{"class":"price-current"})
+price = (price_box.strong.text + price_box.sup.text)
+
+shipping_box = parser.find("li",{"class":"price-ship"})
+shipping = shipping_box.text
+print(shipping)
