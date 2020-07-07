@@ -9,39 +9,48 @@ file.write(headers)
 
 # NewEgg GIGABYTE B450M DS3H AM4 AMD B450 SATA 6Gb/s Micro ATX AMD Motherboard
 NE_Giga = 'https://www.newegg.com/p/pl?d=GIGABYTE%20B450M%20DS3H&N=8000'
+NE_TM  = 'https://www.newegg.com/p/pl?d=MSI%20B450%20TOMAHAWK%20MAX&N=8000'
+NE_GPM = 'https://www.newegg.com/p/pl?d=MSI%20B450%20Gaming%20Plus%20MAX&N=8000'
 
-# Opens Website URL & Downloads Page HTML
-uClient = uReq(NE_Giga)
+urls = []
+urls.append(NE_Giga)
+urls.append(NE_TM)
+urls.append(NE_GPM)
 
-# Store Elements into variable
-test = uClient.read()
+for url in urls:
 
-# Close Page Connection
-uClient.close()
+    # Opens Website URL & Downloads Page HTML
+    uClient = uReq(url)
 
-# HTML parser
-parser = soup(test, "html.parser")
+    # Store Elements into variable
+    test = uClient.read()
 
-# Gets the product name
-container = parser.find("div", {"class":"item-info"})
-container = container.text[10:]
-product_name = container.strip()
+    # Close Page Connection
+    uClient.close()
 
-# Gets the product price
-container = parser.find("div",{"class":"item-action"})
-price_box = container.find("li",{"class":"price-current"})
-price = (price_box.strong.text + price_box.sup.text)
+    # HTML parser
+    parser = soup(test, "html.parser")
 
-# Gets the product shipping
-shipping_box = parser.find("li",{"class":"price-ship"})
-shipping = shipping_box.text.strip()
+    # Gets the product name
+    container = parser.find("div", {"class":"item-info"})
+    container = container.text[10:]
+    product_name = container.strip()
 
-OOS = parser.find("p",{"class":"item-promo"})
-if OOS.text == "":
-    availability = "In Stock"
-else:
-    availability = OOS.text
+    # Gets the product price
+    container = parser.find("div",{"class":"item-action"})
+    price_box = container.find("li",{"class":"price-current"})
+    price = (price_box.strong.text + price_box.sup.text)
 
-file.write(product_name.replace(",","|") + "," + price + "," + shipping + "," + availability + "\n")
+    # Gets the product shipping
+    shipping_box = parser.find("li",{"class":"price-ship"})
+    shipping = shipping_box.text.strip()
+
+    OOS = parser.find("p",{"class":"item-promo"})
+    if OOS.text == "":
+        availability = "In Stock"
+    else:
+        availability = OOS.text
+
+    file.write(product_name.replace(",","|") + "," + price + "," + shipping + "," + availability + "\n")
 
 file.close()
