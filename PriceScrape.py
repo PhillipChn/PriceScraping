@@ -2,6 +2,11 @@ import bs4
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 
+fileName = "products.csv"
+file = open(fileName, "w")
+headers = "Name,Price,Shipping,Available\n"
+file.write(headers)
+
 # NewEgg GIGABYTE B450M DS3H AM4 AMD B450 SATA 6Gb/s Micro ATX AMD Motherboard
 NE_Giga = 'https://www.newegg.com/p/pl?d=GIGABYTE%20B450M%20DS3H&N=8000'
 
@@ -17,17 +22,26 @@ uClient.close()
 # HTML parser
 parser = soup(test, "html.parser")
 
-# container = parser.find("div", {"class":"wrapper"})
-# product_name = container.h1.span.text
-#
+# Gets the product name
 container = parser.find("div", {"class":"item-info"})
 container = container.text[10:]
 product_name = container.strip()
 
+# Gets the product price
 container = parser.find("div",{"class":"item-action"})
 price_box = container.find("li",{"class":"price-current"})
 price = (price_box.strong.text + price_box.sup.text)
 
+# Gets the product shipping
 shipping_box = parser.find("li",{"class":"price-ship"})
-shipping = shipping_box.text
-print(shipping)
+shipping = shipping_box.text.strip()
+
+OOS = parser.find("p",{"class":"item-promo"})
+if OOS.text == "":
+    availability = "In Stock"
+else:
+    availability = OOS.text
+
+file.write(product_name.replace(",","|") + "," + price + "," + shipping + "," + availability + "\n")
+
+file.close()
